@@ -22,8 +22,8 @@ public class GameOverActivity extends AppCompatActivity {
 //                String.format(Locale.US, "fonts/%s", "angrybirds-regular.ttf"));
 //
 //        setTypeface(typeface);
-        TextView headerValue = (TextView) findViewById(R.id.textView5);
-        headerValue.setText( "" + savedInstanceState.get("EXTRA_SCORE"));
+//        TextView headerValue = (TextView) findViewById(R.id.textView5);
+//        headerValue.setText( "" + savedInstanceState.get("EXTRA_SCORE"));
         setContentView(R.layout.activity_game_over);
 
     }
