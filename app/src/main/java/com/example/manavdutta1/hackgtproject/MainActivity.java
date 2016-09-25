@@ -1,6 +1,8 @@
 package com.example.manavdutta1.hackgtproject;
 
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -61,21 +63,36 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
     private int camWidth, camHeight;
     private Sprite leftPawSprite, rightPawSprite;
     private Scene theScene;
+    private SoundPool sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
     //private BitmapTextureAtlas texCat, rightCat;
     //private TiledTextureRegion regCat, rightRegCat;
     private List<Sprite> fishboneSprites;
     private List<Sprite> lightbulbSprites;
+    private int backgroundId;
+    private int garbageId;
+    private int foodId1;
+    private int foodId2;
+    private int lossId;
     @Override
     public EngineOptions onCreateEngineOptions() {
-           DisplayMetrics metrics = new DisplayMetrics();
-           fishboneSprites = new ArrayList<>();
-           lightbulbSprites = new ArrayList<>();
-           getWindowManager().getDefaultDisplay().getMetrics(metrics);
-           camWidth = metrics.widthPixels;
-           camHeight = metrics.heightPixels;
-           final Camera camera = new Camera(0, 0, 400, 600);
-           return new EngineOptions(true, ScreenOrientation.PORTRAIT_SENSOR,
-                new RatioResolutionPolicy(400, 600), camera);
+        // Background music
+        backgroundId = sp.load(this, R.raw.background_game_music, 3);
+        // Garbage
+        garbageId = sp.load(this, R.raw.sad_cat_meow, 1);
+        // Food
+        foodId1 = sp.load(this, R.raw.food_get_meow, 1);
+        foodId2 = sp.load(this, R.raw.food_get_meow2, 1);
+        // Loss
+        lossId = sp.load(this, R.raw.cat_lost_hiss, 2);
+        DisplayMetrics metrics = new DisplayMetrics();
+        fishboneSprites = new ArrayList<>();
+        lightbulbSprites = new ArrayList<>();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        camWidth = metrics.widthPixels;
+        camHeight = metrics.heightPixels;
+        final Camera camera = new Camera(0, 0, 400, 600);
+        return new EngineOptions(true, ScreenOrientation.PORTRAIT_SENSOR,
+            new RatioResolutionPolicy(400, 600), camera);
     }
 
     private void createSpriteSpawnTimeHandler() {
@@ -329,6 +346,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
         scene.setOnSceneTouchListener(this);
         theScene = scene;
         createSpriteSpawnTimeHandler();
+        sp.play(backgroundId, 1, 1, 0, 1, 1);
         return scene;
     }
 }
