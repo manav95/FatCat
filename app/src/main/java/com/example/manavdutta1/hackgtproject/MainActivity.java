@@ -1,6 +1,7 @@
 package com.example.manavdutta1.hackgtproject;
 
 import android.content.Intent;
+import android.graphics.PointF;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -10,6 +11,7 @@ import android.util.Log;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.modifier.MoveYModifier;
+import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.background.Background;
@@ -129,10 +131,12 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
         Sprite sprite;
         if (code == 0) {
             sprite = new Sprite(xPos, yPos, this.fishboneReg, getVertexBufferObjectManager());
+            sprite.setUserData("Fish");
             fishboneSprites.add(sprite);
         }
        else {
             sprite = new Sprite(xPos, yPos, this.lightbulbReg, getVertexBufferObjectManager());
+            sprite.setUserData("LightBulb");
             lightbulbSprites.add(sprite);
         }
         theScene.attachChild(sprite);
@@ -140,6 +144,8 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
         float startY = sprite.getY();
         MoveYModifier mody = new MoveYModifier(2,
                 startY, startY + 1000);
+        //DestructModifier modifier = new DestructModifier(2, startY, startY+1000,sprite,this);
+        //SequenceEntityModifier modif = new SequenceEntityModifier(mody, modifier);
         sprite.registerEntityModifier(mody);
     }
     private ContactListener createContactListener()
@@ -183,7 +189,18 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
         };
         return contactListener;
     }
-
+    public void detach(Sprite sprite) {
+        if (sprite.getUserData().equals("Fish")) {
+            sprite.setVisible(false);
+            fishboneSprites.remove(sprite);
+            theScene.detachChild(sprite);
+        }
+        else {
+            sprite.setVisible(false);
+            lightbulbSprites.remove(sprite);
+            theScene.detachChild(sprite);
+        }
+    }
     @Override
     protected void onCreateResources() {
         try {
@@ -233,19 +250,19 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                 }
             });
 
-            //texCat = new BitmapTextureAtlas(this.getTextureManager(), 136, 85, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-            //regCat = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texCat, this.getAssets(),"leftPaw.png", 0, 0, 1, 1);
-            //texCat.load();
-
-            //rightCat = new BitmapTextureAtlas(this.getTextureManager(), 136, 85, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-            //rightRegCat = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(rightCat, this.getAssets(),"rightPaw.png", 0, 0, 1, 1);
-            //rightCat.load();
+            ITexture egg = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+                @Override
+                public InputStream open() throws IOException {
+                    return getAssets().open("can.png");
+                }
+            });
 
             background.load();
             leftPaw.load();
             rightPaw.load();
             fishbone.load();
             lightbulb.load();
+            can.load();
 
             this.trumpTowerReg = TextureRegionFactory.extractFromTexture(background);
             this.leftPawReg = TextureRegionFactory.extractFromTexture(leftPaw);
