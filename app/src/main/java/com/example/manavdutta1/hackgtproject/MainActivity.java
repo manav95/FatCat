@@ -20,6 +20,7 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.entity.scene.Scene;
+import org.andengine.opengl.texture.Texture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -63,14 +64,19 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
     private float firstX;
     private PhysicsWorld world;
     private ITextureRegion trumpTowerReg, leftPawReg, rightPawReg, fishboneReg, lightbulbReg;
+    private ITextureRegion canReg, eggReg, pizzaReg, hotDogReg;
     private int camWidth, camHeight;
     private Sprite leftPawSprite, rightPawSprite;
     private Scene theScene;
     private SoundPool sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
     //private BitmapTextureAtlas texCat, rightCat;
     //private TiledTextureRegion regCat, rightRegCat;
-    private List<Sprite> fishboneSprites;
-    private List<Sprite> lightbulbSprites;
+    private List<Sprite> fishboneSprites = new ArrayList<Sprite>();
+    private List<Sprite> lightbulbSprites = new ArrayList<Sprite>();
+    private List<Sprite> canSprites = new ArrayList<Sprite>();
+    private List<Sprite> eggSprites = new ArrayList<Sprite>();
+    private List<Sprite> pizzaSprites = new ArrayList<Sprite>();
+    private List<Sprite> hotDogSprites = new ArrayList<Sprite>();
     private int backgroundId;
     private int garbageId;
     private int foodId1;
@@ -112,14 +118,14 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                         float xPos = MathUtils.random(30.0f,
                                 (400 - 30.0f));
                         float yPos = 10.0f;
-                        int random = new Random().nextInt(2);
+                        int random = new Random().nextInt(3);
                         //below method call for new sprite
                         addTarget(xPos, yPos, random);
                         xPos = MathUtils.random(30.0f,
                                 (400 - 30.0f));
                         yPos = 10.0f;
-                        random = new Random().nextInt(2);
-                        addTarget(xPos, yPos, random);
+                        random = new Random().nextInt(3);
+                        addGoodTarget(xPos, yPos, random);
                     }
 
                 });
@@ -134,10 +140,15 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
             sprite.setUserData("Fish");
             fishboneSprites.add(sprite);
         }
-       else {
+       else if (code == 1) {
             sprite = new Sprite(xPos, yPos, this.lightbulbReg, getVertexBufferObjectManager());
             sprite.setUserData("LightBulb");
             lightbulbSprites.add(sprite);
+        }
+        else {
+            sprite = new Sprite(xPos, yPos, this.canReg, getVertexBufferObjectManager());
+            sprite.setUserData("Can");
+            canSprites.add(sprite);
         }
         theScene.attachChild(sprite);
         theScene.registerTouchArea(sprite);
@@ -148,47 +159,36 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
         //SequenceEntityModifier modif = new SequenceEntityModifier(mody, modifier);
         sprite.registerEntityModifier(mody);
     }
-    private ContactListener createContactListener()
-    {
-        ContactListener contactListener = new ContactListener()
-        {
-            @Override
-            public void beginContact(Contact contact)
-            {
-                final Fixture x1 = contact.getFixtureA();
-                final Fixture x2 = contact.getFixtureB();
-                if (x1.getBody().getUserData().equals("Ground")) {
-                    Body body = x1.getBody();
-                    x2.getBody().setActive(false);
-                    body.getWorld().destroyBody(x2.getBody());
-                }
-                else {
-                    Body body = x2.getBody();
-                    x1.getBody().setActive(false);
-                    body.getWorld().destroyBody(x1.getBody());
-                }
-            }
 
-            @Override
-            public void endContact(Contact contact)
-            {
-
-            }
-
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold)
-            {
-
-            }
-
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse)
-            {
-
-            }
-        };
-        return contactListener;
+    public void addGoodTarget(float xPos, float yPos, int code) {
+        Random rand = new Random();
+        Log.d("---Random x----", "Random x" + xPos + "Random y" + yPos);
+        Sprite sprite;
+        if (code == 0) {
+            sprite = new Sprite(xPos, yPos, this.eggReg, getVertexBufferObjectManager());
+            sprite.setUserData("Egg");
+            eggSprites.add(sprite);
+        }
+        else if (code == 1) {
+            sprite = new Sprite(xPos, yPos, this.pizzaReg, getVertexBufferObjectManager());
+            sprite.setUserData("Pizza");
+            pizzaSprites.add(sprite);
+        }
+        else {
+            sprite = new Sprite(xPos, yPos, this.hotDogReg, getVertexBufferObjectManager());
+            sprite.setUserData("Hot Dog");
+            hotDogSprites.add(sprite);
+        }
+        theScene.attachChild(sprite);
+        theScene.registerTouchArea(sprite);
+        float startY = sprite.getY();
+        MoveYModifier mody = new MoveYModifier(2,
+                startY, startY + 1000);
+        //DestructModifier modifier = new DestructModifier(2, startY, startY+1000,sprite,this);
+        //SequenceEntityModifier modif = new SequenceEntityModifier(mody, modifier);
+        sprite.registerEntityModifier(mody);
     }
+
     public void detach(Sprite sprite) {
         if (sprite.getUserData().equals("Fish")) {
             sprite.setVisible(false);
@@ -253,7 +253,21 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
             ITexture egg = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
                 @Override
                 public InputStream open() throws IOException {
-                    return getAssets().open("can.png");
+                    return getAssets().open("egg.png");
+                }
+            });
+
+            ITexture hotDog = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+                @Override
+                public InputStream open() throws IOException {
+                    return getAssets().open("hotdog.png");
+                }
+            });
+
+            ITexture pizza = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+                @Override
+                public InputStream open() throws IOException {
+                    return getAssets().open("pizza.png");
                 }
             });
 
@@ -264,11 +278,21 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
             lightbulb.load();
             can.load();
 
+            egg.load();
+            hotDog.load();
+            pizza.load();
+
             this.trumpTowerReg = TextureRegionFactory.extractFromTexture(background);
             this.leftPawReg = TextureRegionFactory.extractFromTexture(leftPaw);
             this.rightPawReg = TextureRegionFactory.extractFromTexture(rightPaw);
             this.fishboneReg = TextureRegionFactory.extractFromTexture(fishbone);
             this.lightbulbReg = TextureRegionFactory.extractFromTexture(lightbulb);
+            this.canReg = TextureRegionFactory.extractFromTexture(can);
+
+            this.eggReg = TextureRegionFactory.extractFromTexture(egg);
+            this.hotDogReg = TextureRegionFactory.extractFromTexture(hotDog);
+            this.pizzaReg = TextureRegionFactory.extractFromTexture(pizza);
+
         }
         catch (IOException e) {
             Log.e("Error", e.getMessage());
@@ -289,6 +313,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                         strike++;
                         if (strike >= 3){
                             Intent intent = new Intent(this, GameOverActivity.class);
+                            intent.putExtra("EXTRA_SCORE", score);
                             finish();
                             startActivity(intent);
                         }
@@ -309,6 +334,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                             strike++;
                             if(strike >= 3) {
                                 Intent intent = new Intent(this, GameOverActivity.class);
+                                intent.putExtra("EXTRA_SCORE", score);
                                 finish();
                                 startActivity(intent);
                             }
@@ -317,9 +343,73 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                         }
                     }
                     if (theBulb != null) {
-                        fishboneSprites.remove(theBulb);
+                        lightbulbSprites.remove(theBulb);
                         theScene.detachChild(theBulb);
                         return;
+                    }
+                    else {
+                        Sprite thePizza = null;
+                        for (Sprite s : pizzaSprites) {
+                            if (paw.collidesWith(s)) {
+                                sp.play(foodId2, 1,1,0,0,1);
+                                score+= 10;
+                                thePizza = s;
+                                break;
+                            }
+                        }
+                        if (thePizza != null) {
+                            pizzaSprites.remove(thePizza);
+                            theScene.detachChild(thePizza);
+                            return;
+                        }
+//                        else {
+//                            Sprite theHotDog = null;
+//                            for (Sprite s : hotDogSprites) {
+//                                if (paw.collidesWith(s)) {
+//                                    sp.play(foodId1, 1,1,0,0,1);
+//                                    score+= 10;
+//                                    theHotDog = s;
+//                                    break;
+//                                }
+//                            }
+//                            if (theHotDog != null) {
+//                                hotDogSprites.remove(theHotDog);
+//                                theScene.detachChild(theHotDog);
+//                                return;
+//                            }
+//                            else {
+//                                Sprite thePizza = null;
+//                                for (Sprite s : pizzaSprites) {
+//                                    if (paw.collidesWith(s)) {
+//                                        sp.play(foodId2, 1,1,0,0,1);
+//                                        score+= 10;
+//                                        thePizza = s;
+//                                        break;
+//                                    }
+//                                }
+//                                if (thePizza != null) {
+//                                    pizzaSprites.remove(thePizza);
+//                                    theScene.detachChild(thePizza);
+//                                    return;
+//                                }
+//                                else {
+//                                    Sprite theEgg = null;
+//                                    for (Sprite s : eggSprites) {
+//                                        if (paw.collidesWith(s)) {
+//                                            sp.play(foodId1, 1,1,0,0,1);
+//                                            score+= 10;
+//                                            theEgg = s;
+//                                            break;
+//                                        }
+//                                    }
+//                                    if (theEgg != null) {
+//                                        eggSprites.remove(theEgg);
+//                                        theScene.detachChild(theEgg);
+//                                        return;
+//                                    }
+//                                }
+//                            }
+//                        }
                     }
                 }
     }
