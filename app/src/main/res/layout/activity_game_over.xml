@@ -33,19 +33,21 @@
             android:textColor="@color/white"
             android:background="@color/black"
             android:id="@+id/button7"
+            android:onClick="retry"
             android:layout_above="@+id/linearLayout"
             android:layout_alignStart="@+id/linearLayout" />
 
     </LinearLayout>
 
     <Button
-            android:text="Quit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/button8"
-            android:textColor="@color/white"
-            android:background="@color/black"
-            android:layout_marginEnd="29dp"
+        android:text="Quit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button8"
+        android:textColor="@color/white"
+        android:background="@color/black"
+        android:layout_marginEnd="29dp"
+        android:onClick="quit"
         android:layout_alignTop="@+id/linearLayout"
         android:layout_alignParentEnd="true" />
 

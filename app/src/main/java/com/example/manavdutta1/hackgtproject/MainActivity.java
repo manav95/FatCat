@@ -1,5 +1,6 @@
 package com.example.manavdutta1.hackgtproject;
 
+import android.content.Intent;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -73,6 +74,8 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
     private int foodId1;
     private int foodId2;
     private int lossId;
+    private int score;
+    private int strike;
     @Override
     public EngineOptions onCreateEngineOptions() {
         // Background music
@@ -184,10 +187,11 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
     @Override
     protected void onCreateResources() {
         try {
+            final String[] backgrounds = {"woodbackground.png", "space.png", "city.png"};
             ITexture background = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
                 @Override
                 public InputStream open() throws IOException {
-                    return getAssets().open("woodbackground.png");
+                    return getAssets().open(backgrounds[new Random().nextInt(3)]);
                 }
             });
 
@@ -264,6 +268,13 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                 Sprite theFish = null;
                 for (Sprite s : fishboneSprites) {
                     if (paw.collidesWith(s)) {
+                        sp.play(garbageId, 1,1,0,0,1);
+                        strike++;
+                        if (strike >= 3){
+                            Intent intent = new Intent(this, GameOverActivity.class);
+                            finish();
+                            startActivity(intent);
+                        }
                        theFish = s;
                        break;
                     }
@@ -277,6 +288,13 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                     Sprite theBulb = null;
                     for (Sprite s : lightbulbSprites) {
                         if (paw.collidesWith(s)) {
+                            sp.play(garbageId, 1,1,0,0,1);
+                            strike++;
+                            if(strike >= 3) {
+                                Intent intent = new Intent(this, GameOverActivity.class);
+                                finish();
+                                startActivity(intent);
+                            }
                             theBulb = s;
                             break;
                         }
@@ -327,6 +345,8 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
     @Override
     protected Scene onCreateScene() {
         final Scene scene = new Scene();
+        score = 0;
+        strike = 0;
         int halfWidth = (int)((1.0/2.0)*camWidth);
         int wholeHeight = camHeight;
         Sprite backgroundSprite = new Sprite(0, 0, this.trumpTowerReg, getVertexBufferObjectManager());
@@ -346,7 +366,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
         scene.setOnSceneTouchListener(this);
         theScene = scene;
         createSpriteSpawnTimeHandler();
-        sp.play(backgroundId, 1, 1, 0, 1, 1);
+        sp.play(backgroundId, 1, 1, 0, -1, 1);
         return scene;
     }
 }
