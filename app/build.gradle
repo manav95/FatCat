@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
-
+    aaptOptions.setProperty("cruncherEnabled", false)
     defaultConfig {
         applicationId "com.example.manavdutta1.hackgtproject"
         minSdkVersion 23
@@ -17,9 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets{
+    sourceSets {
         main {
-            jniLibs.srcDirs = ['libs']
+            jni.srcDirs = []
         }
     }
 }
@@ -30,4 +30,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile project(':andEngine')
     compile project(':andEnginePhysicsBox2DExtension')
+
 }
