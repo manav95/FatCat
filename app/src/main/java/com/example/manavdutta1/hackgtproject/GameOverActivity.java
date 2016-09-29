@@ -30,10 +30,12 @@ public class GameOverActivity extends AppCompatActivity {
 
     public void retry(View v) {
         Intent intent = new Intent(this, MainActivity.class);
+        finish();
         startActivity(intent);
     }
 
     public void quit(View v) {
         finish();
+        onStop();
     }
 }

@@ -314,6 +314,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                         if (strike >= 3){
                             Intent intent = new Intent(this, GameOverActivity.class);
                             intent.putExtra("EXTRA_SCORE", score);
+                            sp.pause(backgroundId);
                             finish();
                             startActivity(intent);
                         }
@@ -335,6 +336,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IOnSceneTouc
                             if(strike >= 3) {
                                 Intent intent = new Intent(this, GameOverActivity.class);
                                 intent.putExtra("EXTRA_SCORE", score);
+                                sp.pause(backgroundId);
                                 finish();
                                 startActivity(intent);
                             }
